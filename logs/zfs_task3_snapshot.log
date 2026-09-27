@@ -1,0 +1,33 @@
+Script started on 2026-09-27 23:14:33+00:00 [COMMAND="bash /tmp/zfs_task3.sh" <not executed on terminal>]
++ echo '============= TASK 3: snapshot receive + secret message ============='
+============= TASK 3: snapshot receive + secret message =============
++ cp /tmp/otus_task2.file /root/otus_task2.file
++ ls -l /root/otus_task2.file
+-rw-r--r-- 1 root root 5432736 Sep 27 23:14 /root/otus_task2.file
++ echo '--- receive snapshot stream ---'
+--- receive snapshot stream ---
++ zfs receive otus/test@today
++ echo '--- datasets/snapshots ---'
+--- datasets/snapshots ---
++ zfs list -r otus
+NAME             USED  AVAIL  REFER  MOUNTPOINT
+otus            4.89M   347M    24K  /otus
+otus/hometask2  1.88M   347M  1.88M  /otus/hometask2
+otus/test       2.83M   347M  2.83M  /otus/test
++ zfs list -t snapshot
+NAME              USED  AVAIL  REFER  MOUNTPOINT
+otus/test@today     0B      -  2.83M  -
++ echo '--- search for secret_message ---'
+--- search for secret_message ---
++ find /otus/test -name secret_message
+/otus/test/task1/file_mess/secret_message
++ echo '--- contents ---'
+--- contents ---
++ find /otus/test -name secret_message -exec cat '{}' ';'
+https://otus.ru/lessons/linux-hl/
+
++ echo
+
++ set +x
+
+Script done on 2026-09-27 23:14:33+00:00 [COMMAND_EXIT_CODE="0"]

@@ -1,0 +1,75 @@
+Script started on 2026-09-27 23:14:09+00:00 [COMMAND="bash /tmp/zfs_task1_final.sh" <not executed on terminal>]
++ echo '============= TASK 1: best compression algorithm ============='
+============= TASK 1: best compression algorithm =============
++ echo '--- supported compression algorithms (zfs) ---'
+--- supported compression algorithms (zfs) ---
++ zfs
++ sed -n /compression/,+2p
++ head -5
++ echo '--- pools (4x RAID1 mirror) ---'
+--- pools (4x RAID1 mirror) ---
++ zpool list
+NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+otus1   480M  6.54M   473M        -         -     0%     1%  1.00x    ONLINE  -
+otus2   480M  5.97M   474M        -         -     0%     1%  1.00x    ONLINE  -
+otus3   480M  3.54M   476M        -         -     0%     0%  1.00x    ONLINE  -
+otus4   480M  10.4M   470M        -         -     0%     2%  1.00x    ONLINE  -
++ echo '--- compression property ---'
+--- compression property ---
++ zfs get compression
+NAME   PROPERTY     VALUE           SOURCE
+otus1  compression  lzjb            local
+otus2  compression  lz4             local
+otus3  compression  gzip-9          local
+otus4  compression  zle             local
++ echo '--- test data (same files in every pool) ---'
+--- test data (same files in every pool) ---
++ ls -l /otus1
+total 6571
+-rw-r--r-- 1 root root 6488666 Sep 27 23:13 big.txt
+-rw-r--r-- 1 root root 4234910 Sep 27 23:13 words.txt
++ echo '--- RESULTS ---'
+--- RESULTS ---
++ zfs list
+NAME    USED  AVAIL  REFER  MOUNTPOINT
+otus1  6.54M   345M  6.44M  /otus1
+otus2  5.97M   346M  5.87M  /otus2
+otus3  3.54M   348M  3.44M  /otus3
+otus4  10.4M   342M  10.3M  /otus4
++ zfs get compressratio
+NAME   PROPERTY       VALUE  SOURCE
+otus1  compressratio  1.61x  -
+otus2  compressratio  1.77x  -
+otus3  compressratio  3.02x  -
+otus4  compressratio  1.01x  -
++ printf '%-7s %-9s %-7s %s\n' POOL COMPRESS RATIO USED
+POOL    COMPRESS  RATIO   USED
++ for p in otus1 otus2 otus3 otus4
+++ zfs get -H -o value compression otus1
+++ zfs get -H -o value compressratio otus1
+++ zfs get -H -o value used otus1
++ printf '%-7s %-9s %-7s %s\n' otus1 lzjb 1.61x 6.54M
+otus1   lzjb      1.61x   6.54M
++ for p in otus1 otus2 otus3 otus4
+++ zfs get -H -o value compression otus2
+++ zfs get -H -o value compressratio otus2
+++ zfs get -H -o value used otus2
++ printf '%-7s %-9s %-7s %s\n' otus2 lz4 1.77x 5.97M
+otus2   lz4       1.77x   5.97M
++ for p in otus1 otus2 otus3 otus4
+++ zfs get -H -o value compression otus3
+++ zfs get -H -o value compressratio otus3
+++ zfs get -H -o value used otus3
++ printf '%-7s %-9s %-7s %s\n' otus3 gzip-9 3.02x 3.54M
+otus3   gzip-9    3.02x   3.54M
++ for p in otus1 otus2 otus3 otus4
+++ zfs get -H -o value compression otus4
+++ zfs get -H -o value compressratio otus4
+++ zfs get -H -o value used otus4
++ printf '%-7s %-9s %-7s %s\n' otus4 zle 1.01x 10.4M
+otus4   zle       1.01x   10.4M
++ echo '=> gzip-9 (otus3) shows the best compression ratio.'
+=> gzip-9 (otus3) shows the best compression ratio.
++ set +x
+
+Script done on 2026-09-27 23:14:09+00:00 [COMMAND_EXIT_CODE="0"]

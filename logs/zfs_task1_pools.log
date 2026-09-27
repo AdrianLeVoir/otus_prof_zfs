@@ -1,0 +1,47 @@
+Script started on 2026-09-27 23:12:52+00:00 [COMMAND="bash /tmp/zfs_task1a.sh" <not executed on terminal>]
++ echo '######### TASK 1: pools + compression algorithms #########'
+######### TASK 1: pools + compression algorithms #########
++ lsblk -o NAME,SIZE,TYPE
++ grep -E 'sd[b-i] '
+sdb                        512M disk
+sdc                        512M disk
+sdd                        512M disk
+sde                        512M disk
+sdf                        512M disk
+sdg                        512M disk
+sdh                        512M disk
+sdi                        512M disk
++ echo '--- determine supported compression algorithms ---'
+--- determine supported compression algorithms ---
++ zfs get -H compression
++ head -1
++ zfs
++ grep -i compression
++ head -5
++ echo '--- create 4 mirrors ---'
+--- create 4 mirrors ---
++ zpool create otus1 mirror /dev/sdb /dev/sdc
++ zpool create otus2 mirror /dev/sdd /dev/sde
++ zpool create otus3 mirror /dev/sdf /dev/sdg
++ zpool create otus4 mirror /dev/sdh /dev/sdi
++ echo '--- set compression per pool ---'
+--- set compression per pool ---
++ zfs set compression=lzjb otus1
++ zfs set compression=lz4 otus2
++ zfs set compression=gzip-9 otus3
++ zfs set compression=zle otus4
++ zpool list
+NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+otus1   480M   141K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus2   480M   141K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus3   480M   140K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus4   480M   165K   480M        -         -     0%     0%  1.00x    ONLINE  -
++ zfs get compression
+NAME   PROPERTY     VALUE           SOURCE
+otus1  compression  lzjb            local
+otus2  compression  lz4             local
+otus3  compression  gzip-9          local
+otus4  compression  zle             local
++ set +x
+
+Script done on 2026-09-27 23:13:03+00:00 [COMMAND_EXIT_CODE="0"]

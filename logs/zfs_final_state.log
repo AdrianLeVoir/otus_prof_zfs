@@ -1,0 +1,151 @@
+Script started on 2026-09-27 23:14:46+00:00 [COMMAND="bash /tmp/zfs_final.sh" <not executed on terminal>]
++ echo '============= FINAL STATE ============='
+============= FINAL STATE =============
++ echo '--- disks ---'
+--- disks ---
++ lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT
+NAME                       SIZE TYPE FSTYPE      MOUNT
+sda                         40G disk             
+├─sda1                       1M part             
+├─sda2                       2G part ext4        /boot
+└─sda3                      38G part LVM2_member 
+  └─ubuntu--vg-ubuntu--lv   19G lvm  ext4        /
+sdb                        512M disk             
+├─sdb1                     502M part zfs_member  
+└─sdb9                       8M part             
+sdc                        512M disk             
+├─sdc1                     502M part zfs_member  
+└─sdc9                       8M part             
+sdd                        512M disk             
+├─sdd1                     502M part zfs_member  
+└─sdd9                       8M part             
+sde                        512M disk             
+├─sde1                     502M part zfs_member  
+└─sde9                       8M part             
+sdf                        512M disk             
+├─sdf1                     502M part zfs_member  
+└─sdf9                       8M part             
+sdg                        512M disk             
+├─sdg1                     502M part zfs_member  
+└─sdg9                       8M part             
+sdh                        512M disk             
+├─sdh1                     502M part zfs_member  
+└─sdh9                       8M part             
+sdi                        512M disk             
+├─sdi1                     502M part zfs_member  
+└─sdi9                       8M part             
++ echo '--- zpool list ---'
+--- zpool list ---
++ zpool list
+NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+otus    480M  5.10M   475M        -         -     0%     1%  1.00x    ONLINE  -
+otus1   480M  6.54M   473M        -         -     0%     1%  1.00x    ONLINE  -
+otus2   480M  5.97M   474M        -         -     0%     1%  1.00x    ONLINE  -
+otus3   480M  3.54M   476M        -         -     0%     0%  1.00x    ONLINE  -
+otus4   480M  10.4M   470M        -         -     0%     2%  1.00x    ONLINE  -
++ echo '--- zpool status ---'
+--- zpool status ---
++ zpool status
+  pool: otus
+ state: ONLINE
+status: Some supported and requested features are not enabled on the pool.
+	The pool can still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+	the pool may no longer be accessible by software that does not support
+	the features. See zpool-features(7) for details.
+config:
+
+	NAME                                    STATE     READ WRITE CKSUM
+	otus                                    ONLINE       0     0     0
+	  mirror-0                              ONLINE       0     0     0
+	    /root/zfs_import/zpoolexport/filea  ONLINE       0     0     0
+	    /root/zfs_import/zpoolexport/fileb  ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus1
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus1       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdb     ONLINE       0     0     0
+	    sdc     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus2
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus2       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdd     ONLINE       0     0     0
+	    sde     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus3
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus3       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdf     ONLINE       0     0     0
+	    sdg     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus4
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus4       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdh     ONLINE       0     0     0
+	    sdi     ONLINE       0     0     0
+
+errors: No known data errors
++ echo '--- zfs list ---'
+--- zfs list ---
++ zfs list -r
+NAME             USED  AVAIL  REFER  MOUNTPOINT
+otus            4.92M   347M    24K  /otus
+otus/hometask2  1.88M   347M  1.88M  /otus/hometask2
+otus/test       2.85M   347M  2.83M  /otus/test
+otus1           6.54M   345M  6.44M  /otus1
+otus2           5.97M   346M  5.87M  /otus2
+otus3           3.54M   348M  3.44M  /otus3
+otus4           10.4M   342M  10.3M  /otus4
++ echo '--- snapshots ---'
+--- snapshots ---
++ zfs list -t snapshot
+NAME              USED  AVAIL  REFER  MOUNTPOINT
+otus/test@today    21K      -  2.83M  -
++ echo '--- compression per pool ---'
+--- compression per pool ---
++ zfs get compression,compressratio
+NAME             PROPERTY       VALUE           SOURCE
+otus             compression    zle             local
+otus             compressratio  1.23x           -
+otus/hometask2   compression    zle             inherited from otus
+otus/hometask2   compressratio  1.00x           -
+otus/test        compression    zle             inherited from otus
+otus/test        compressratio  1.32x           -
+otus/test@today  compression    -               -
+otus/test@today  compressratio  1.32x           -
+otus1            compression    lzjb            local
+otus1            compressratio  1.61x           -
+otus2            compression    lz4             local
+otus2            compressratio  1.77x           -
+otus3            compression    gzip-9          local
+otus3            compressratio  3.02x           -
+otus4            compression    zle             local
+otus4            compressratio  1.01x           -
++ set +x
+
+Script done on 2026-09-27 23:14:46+00:00 [COMMAND_EXIT_CODE="0"]
